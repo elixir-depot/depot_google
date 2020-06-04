@@ -1,23 +1,23 @@
-defmodule DepotS3.MixProject do
+defmodule DepotGoogle.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :depot_s3,
-      version: "0.1.1",
+      app: :depot_google,
+      version: "0.0.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       description: description(),
       package: package(),
-      name: "Depot S3",
-      source_url: "https://github.com/elixir-depot/depot_s3"
+      name: "Depot Google",
+      source_url: "https://github.com/elixir-depot/depot_google"
     ]
   end
 
   defp description() do
-    "Depot adapter for S3."
+    "Depot adapter for Google Cloud Storage."
   end
 
   defp package() do
@@ -25,7 +25,7 @@ defmodule DepotS3.MixProject do
       # These are the default files included in the package
       files: ~w(lib mix.exs README* LICENSE*),
       licenses: ["Apache-2.0"],
-      links: %{"GitHub" => "https://github.com/elixir-depot/depot_s3"}
+      links: %{"GitHub" => "https://github.com/elixir-depot/depot_google"}
     ]
   end
 
@@ -43,12 +43,8 @@ defmodule DepotS3.MixProject do
   defp deps do
     [
       {:depot, "~> 0.2.2"},
-      {:ex_aws, "~> 2.1"},
-      {:ex_aws_s3, "~> 2.0"},
-      {:hackney, "~> 1.9"},
-      {:sweet_xml, "~> 0.6"},
-      {:minio_server, "~> 0.1.0", only: :test},
-      {:jason, "~> 1.0", only: :test},
+      {:goth, "~> 1.2"},
+      {:google_api_storage, "~> 0.22"},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false}
     ]
   end
