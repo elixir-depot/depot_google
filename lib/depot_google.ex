@@ -63,37 +63,16 @@ defmodule DepotGoogle do
     metadata = Map.put(config.metadata, :name, path)
 
     with {:ok, conn} <- new_conn(config.account),
-         {:ok, _} <- insert_iodata(conn, config.bucket, metadata, contents) do
+         {:ok, _} <-
+           Google.storage_objects_insert_iodata(
+             conn,
+             config.bucket,
+             "multipart",
+             metadata,
+             contents
+           ) do
       :ok
     end
-  end
-
-  # uploading iodata using the official library is broken so we have to
-  # reimplement it with changes below for now
-  # https://github.com/googleapis/elixir-google-api/pull/3638
-  defp insert_iodata(conn, bucket, metadata, contents) do
-    alias GoogleApi.Gax.{Request, Response}
-
-    body =
-      Tesla.Multipart.new()
-      |> Tesla.Multipart.add_field("metadata", Poison.encode!(metadata),
-        headers: [{:"Content-Type", "application/json"}]
-      )
-      |> Tesla.Multipart.add_file_content(contents, "data")
-
-    request =
-      Request.new()
-      |> Request.method(:post)
-      |> Request.url("/upload/storage/v1/b/{bucket}/o", %{
-        "bucket" => URI.encode(bucket, &URI.char_unreserved?/1)
-      })
-      |> Request.add_param(:query, :uploadType, "multipart")
-      |> Request.add_param(:body, :body, body)
-      |> Request.library_version("0.3.2")
-
-    conn
-    |> GoogleApi.Storage.V1.Connection.execute(request)
-    |> Response.decode(struct: %GoogleApi.Storage.V1.Model.Object{})
   end
 
   @impl Depot.Adapter
